@@ -17,20 +17,44 @@ def configured():
     return bool(c["RAZORPAY_KEY_ID"] and c["RAZORPAY_KEY_SECRET"])
 
 
+
 def create_order(amount_paise, receipt):
     c = current_app.config
+
     try:
         r = requests.post(
             f"{API}/orders",
-            auth=(c["RAZORPAY_KEY_ID"], c["RAZORPAY_KEY_SECRET"]),
-            json={"amount": amount_paise, "currency": "INR", "receipt": receipt,
-                  "capture": "automatic"},
-            timeout=15)
+            auth=(
+                c["RAZORPAY_KEY_ID"].strip(),
+                c["RAZORPAY_KEY_SECRET"].strip()
+            ),
+            json={
+                "amount": int(amount_paise),
+                "currency": "INR",
+                "receipt": receipt
+            },
+            timeout=20
+        )
+
+        if not r.ok:
+            current_app.logger.error(
+                "Razorpay response status: %s",
+                r.status_code
+            )
+            current_app.logger.error(
+                "Razorpay response body: %s",
+                r.text[:2000]
+            )
+
         r.raise_for_status()
         return r.json()["id"]
+
     except (requests.RequestException, KeyError, ValueError) as e:
-        current_app.logger.error("Razorpay order creation failed: %s", e)
+        current_app.logger.exception(
+            "Razorpay order creation failed"
+        )
         raise PaymentError from e
+
 
 
 def _matches(secret, message, signature):
