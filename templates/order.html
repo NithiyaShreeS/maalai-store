@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="wrap page"><h1>Order #{{ o.id }}</h1>
+<div class="box">
+  <p><b>Status:</b> {{ o.status.replace('_',' ')|capitalize }}</p>
+  <p><b>Payment:</b> {{ 'Paid online' if o.paid else ('Cash on delivery' if o.method=='cod' else 'Not paid') }}</p>
+  {% if o.note %}<p class="err">{{ o.note }}</p>{% endif %}
+  {% if o.status=='pending_payment' %}<p><a class="btn" href="{{ url_for('pay', oid=o.id) }}">Pay now</a></p>{% endif %}
+</div>
+<table><tr><th>Item</th><th>Qty</th><th>Amount</th></tr>
+{% for i in items %}<tr><td>{{ i.name }}{% if i.size %}, size {{ i.size }}{% endif %}</td><td>{{ i.qty }}</td><td>{{ (i.price*i.qty)|inr }}</td></tr>{% endfor %}
+<tr><td colspan="2">Delivery</td><td>{{ o.delivery|inr }}</td></tr><tr><th colspan="2">Total</th><th>{{ o.total|inr }}</th></tr></table>
+<p>Deliver to: {{ o.name }}, {{ o.address }}, {{ o.city }} {{ o.pin }} ({{ o.phone }})</p>
+</div>
+{% endblock %}

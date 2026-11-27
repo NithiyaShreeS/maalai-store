@@ -1,0 +1,21 @@
+{% extends "base.html" %}{% from "_macros.html" import picture %}
+{% block body %}
+<div class="wrap page"><h1>Your bag</h1>
+{% for l in lines %}
+  <div class="item"><div class="thumb">{{ picture(l.product) }}</div>
+    <div>{{ l.product.name }}{% if l.size %}, size {{ l.size }}{% endif %}
+      <form class="inline" method="post" action="{{ url_for('cart_update') }}">
+        <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="key" value="{{ l.key }}">
+        <input class="field" style="width:80px" type="number" name="qty" min="0" max="10" value="{{ l.qty }}" aria-label="Quantity">
+        <button class="add">Update</button>
+      </form><span class="meta">Set to 0 to remove.</span></div>
+    <b>{{ l.amount|inr }}</b></div>
+{% else %}<p>Your bag is empty.</p><p><a class="btn" href="{{ url_for('home') }}">Browse the collection</a></p>{% endfor %}
+{% if lines %}
+  <p class="total"><span>Subtotal</span><span>{{ subtotal|inr }}</span></p>
+  <p class="total"><span>Delivery</span><span>{{ delivery|inr if delivery else 'Free' }}</span></p>
+  <p class="total price"><span>Total</span><span>{{ (subtotal+delivery)|inr }}</span></p>
+  <p><a class="btn" href="{{ url_for('checkout') }}">Check out</a></p>
+{% endif %}
+</div>
+{% endblock %}

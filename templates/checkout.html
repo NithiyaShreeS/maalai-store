@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="wrap page narrow"><h1>Checkout</h1>
+<p class="total"><span>Subtotal</span><span>{{ subtotal|inr }}</span></p>
+<p class="total"><span>Delivery</span><span>{{ delivery|inr if delivery else 'Free' }}</span></p>
+<p class="total price"><span>Total</span><span>{{ (subtotal+delivery)|inr }}</span></p>
+<form method="post">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label>Full name<input name="name" value="{{ request.form.name or user.name }}" required></label>
+  <label>Mobile number (10 digits)<input name="phone" inputmode="numeric" pattern="[6-9][0-9]{9}" value="{{ request.form.phone }}" required></label>
+  <label>Address<textarea name="address" rows="3" required>{{ request.form.address }}</textarea></label>
+  <label>City<input name="city" value="{{ request.form.city }}" required></label>
+  <label>PIN code<input name="pin" inputmode="numeric" pattern="[1-9][0-9]{5}" value="{{ request.form.pin }}" required></label>
+  <label>Payment<select name="method">
+    {% if online %}<option value="razorpay">Pay online (UPI, card, netbanking) via Razorpay</option>{% endif %}
+    <option value="cod">Cash on delivery</option></select></label>
+  {% if not online %}<p class="err">Online payment is off until Razorpay keys are added to the .env file.</p>{% endif %}
+  <button class="btn">Place order</button>
+</form></div>
+{% endblock %}

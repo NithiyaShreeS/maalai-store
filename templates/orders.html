@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="wrap page"><h1>My orders</h1>
+{% if orders %}<table><tr><th>Order</th><th>Date (UTC)</th><th>Status</th><th>Total</th></tr>
+{% for o in orders %}<tr><td><a href="{{ url_for('order', oid=o.id) }}">#{{ o.id }}</a></td><td>{{ o.created[:10] }}</td><td>{{ o.status.replace('_',' ')|capitalize }}</td><td>{{ o.total|inr }}</td></tr>{% endfor %}</table>
+{% else %}<p>No orders yet.</p><a class="btn" href="{{ url_for('home') }}">Browse the collection</a>{% endif %}</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}{% from "_macros.html" import card %}
+{% block body %}
+{% if not request.args %}
+<div class="hero">
+  <svg id="garland" viewBox="0 0 1200 290" preserveAspectRatio="xMidYMin slice" aria-hidden="true"></svg>
+  <h1>Jewellery for the days you remember</h1>
+  <p>Necklaces, jhumkas, bangles, rings and anklets, from everyday silver to wedding-season sets.</p>
+  <a class="btn" href="#shop">Shop the collection</a>
+</div>
+{% endif %}
+<section id="shop"><div class="wrap">
+  <h2>The collection</h2>
+  <form class="filters" method="get" action="{{ url_for('home') }}#shop" style="display:flex">
+    <label>Search<input name="q" type="search" value="{{ request.args.q }}"></label>
+    <label>Category<select name="category"><option value="">All categories</option>{% for c in categories %}<option {{ 'selected' if request.args.category==c }}>{{ c }}</option>{% endfor %}</select></label>
+    <label>Material<select name="material"><option value="">All materials</option>{% for m in materials %}<option {{ 'selected' if request.args.material==m }}>{{ m }}</option>{% endfor %}</select></label>
+    <label>Price<select name="max"><option value="">Any price</option>{% for v in ['1000','2500','5000'] %}<option value="{{ v }}" {{ 'selected' if request.args.max==v }}>Under ₹{{ v }}</option>{% endfor %}</select></label>
+    <label>Sort by<select name="sort">{% for v,t in [('','Featured'),('lo','Price: low to high'),('hi','Price: high to low'),('az','Name')] %}<option value="{{ v }}" {{ 'selected' if request.args.get('sort','')==v }}>{{ t }}</option>{% endfor %}</select></label>
+    <button class="btn" style="align-self:end">Apply</button>
+  </form>
+  <p class="count">{{ products|length }} {{ 'piece' if products|length==1 else 'pieces' }}</p>
+  <div class="grid">{% for p in products %}{{ card(p, csrf, p.id in wished) }}{% endfor %}</div>
+  {% if not products %}<div class="empty"><p>No pieces match these filters.</p><a class="btn" href="{{ url_for('home') }}#shop">Clear filters</a></div>{% endif %}
+</div></section>
+{% endblock %}

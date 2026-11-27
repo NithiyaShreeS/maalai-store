@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% from "_macros.html" import card %}
+{% block body %}
+<div class="wrap page"><h1>Wishlist</h1>
+<div class="grid">{% for p in products %}{{ card(p, csrf, true) }}{% endfor %}</div>
+{% if not products %}<p>Nothing saved yet. Tap the heart on any piece to keep it here.</p>{% endif %}</div>
+{% endblock %}

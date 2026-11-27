@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ store }}{% endblock %}</title>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Mukta:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header><div class="wrap">
+  <a class="logo" href="{{ url_for('home') }}">{{ store }}</a>
+  <nav aria-label="Main">
+    <a href="{{ url_for('home') }}#shop">Shop</a><a href="{{ url_for('info') }}">Size, care and delivery</a><a href="{{ url_for('contact') }}">Contact</a>
+    {% if user %}<a href="{{ url_for('my_orders') }}">My orders</a>{% if user.is_admin %}<a href="{{ url_for('admin') }}">Admin</a>{% endif %}
+    {% else %}<a href="{{ url_for('login') }}">Log in</a>{% endif %}
+  </nav>
+  {% if user %}<form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="hbtn">Log out</button></form>{% endif %}
+  <a class="hbtn" href="{{ url_for('wishlist') }}">Wishlist</a>
+  <a class="hbtn" href="{{ url_for('cart') }}">Bag<b>{{ cart_count }}</b></a>
+</div></header>
+<main>
+{% with msgs = get_flashed_messages() %}{% if msgs %}<div class="wrap">{% for m in msgs %}<p class="flash" role="status">{{ m }}</p>{% endfor %}</div>{% endif %}{% endwith %}
+{% block body %}{% endblock %}
+</main>
+<footer><div class="wrap"><p class="logo">{{ store }}</p><p>Sample products, prices and policies. Replace them before selling.</p></div></footer>
+<script src="{{ url_for('static', filename='art.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body></html>

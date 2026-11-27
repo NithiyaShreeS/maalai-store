@@ -1,0 +1,19 @@
+{% macro picture(p) -%}
+{% if p.image %}<img src="{{ url_for('image', name=p.image) }}" alt="{{ p.name }}">
+{%- else %}<span data-art data-cat="{{ p.category }}" data-mat="{{ p.material }}" data-stone="{{ p.stone }}" data-v="{{ p.design }}" data-name="{{ p.name }}"></span>{% endif %}
+{%- endmacro %}
+{% macro card(p, csrf, wished) %}
+<article class="card">
+  <a class="pic" href="{{ url_for('product', pid=p.id) }}">{{ picture(p) }}</a>
+  <form class="wishf" method="post" action="{{ url_for('wishlist_toggle', pid=p.id) }}">
+    <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="back" value="{{ request.full_path }}">
+    <button class="heart" aria-pressed="{{ 'true' if wished else 'false' }}" aria-label="Save {{ p.name }}">{{ '♥' if wished else '♡' }}</button>
+  </form>
+  <h3>{{ p.name }}</h3><p class="meta">{{ p.material }}</p>
+  <div class="row"><span class="price">{{ p.price|inr }}</span>
+    {% if p.stock < 1 %}<span class="err">Sold out</span>
+    {% elif p.sizes %}<a class="add" href="{{ url_for('product', pid=p.id) }}">Choose size</a>
+    {% else %}<form method="post" action="{{ url_for('cart_add', pid=p.id) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="add">Add to bag</button></form>{% endif %}
+  </div>
+</article>
+{% endmacro %}

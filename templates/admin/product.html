@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="wrap page narrow"><h1>{{ 'Edit product' if p else 'Add product' }}</h1>
+<form method="post" enctype="multipart/form-data"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label>Name<input name="name" value="{{ p.name if p }}" required></label>
+<label>Category<select name="category">{% for c in categories %}<option {{ 'selected' if p and p.category==c }}>{{ c }}</option>{% endfor %}</select></label>
+<label>Material<input name="material" value="{{ p.material if p }}" required></label>
+<label>Price in rupees<input class="field" type="number" step="0.01" min="1" name="price" value="{{ p.price/100 if p }}" required></label>
+<label>Stock<input class="field" type="number" min="0" name="stock" value="{{ p.stock if p else 0 }}" required></label>
+<label>Sizes, separated by commas (leave empty if none)<input name="sizes" value="{{ p.sizes if p }}"></label>
+<label>Description<textarea name="description" rows="3">{{ p.description if p }}</textarea></label>
+<label>Photo (JPG, PNG or WebP, up to 3 MB)<input type="file" name="image" accept=".jpg,.jpeg,.png,.webp"></label>
+<label><input type="checkbox" name="active" style="width:auto" {{ 'checked' if not p or p.active }}> Show in the store</label>
+<button class="btn">Save product</button></form></div>
+{% endblock %}

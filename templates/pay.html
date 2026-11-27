@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="wrap page narrow"><h1>Pay for order #{{ o.id }}</h1>
+<p class="price">{{ o.total|inr }}</p>
+<p>Your items are held for 30 minutes.</p>
+<p id="payMsg" class="err" role="status"></p>
+<button class="btn" id="payBtn">Pay with Razorpay</button>
+<p><a href="{{ url_for('order', oid=o.id) }}">View order</a></p>
+<form method="post" action="{{ url_for('verify', oid=o.id) }}" id="verifyForm">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input type="hidden" name="razorpay_payment_id"><input type="hidden" name="razorpay_signature">
+</form></div>
+{% endblock %}
+{% block scripts %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+const options={{ options|tojson }};
+const msg=document.getElementById("payMsg");
+options.handler=r=>{
+  const f=document.getElementById("verifyForm");
+  f.razorpay_payment_id.value=r.razorpay_payment_id;
+  f.razorpay_signature.value=r.razorpay_signature;
+  f.submit();
+};
+document.getElementById("payBtn").onclick=()=>{
+  if(!window.Razorpay){msg.textContent="Razorpay did not load. Check your connection and reload.";return}
+  const rz=new Razorpay(options);
+  rz.on("payment.failed",e=>msg.textContent="Payment failed: "+e.error.description);
+  rz.open();
+};
+</script>
+{% endblock %}
